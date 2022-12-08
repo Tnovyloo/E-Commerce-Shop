@@ -25,11 +25,9 @@ def store(request, category_slug=None):
 def product_detail(request, category_slug, product_slug):
     try:
         product = Product.objects.get(category__slug=category_slug, slug=product_slug)
-        is_available = product.is_available
         # To get into category model slug we need to use '__'
         context = {
             'product': product,
-            'is_available': is_available
         }
     except Exception:
         raise Exception
