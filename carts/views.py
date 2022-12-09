@@ -50,13 +50,19 @@ def cart(request, total=0, quantity=0, cart_items=None):
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
             quantity += cart_item.quantity
+        tax = (23 * total) / 100
+        grand_total = total + tax
+
+
     except ObjectNotExists:
         pass
 
     context = {
         'total': total,
         'quantity': quantity,
-        'cart_items': cart_items
+        'cart_items': cart_items,
+        'tax': tax,
+        'grand_total': grand_total,
     }
 
     return render(request, template_name='cart/cart.html', context=context)
