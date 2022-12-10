@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from store.models import Product
 from carts.models import CartItem, Cart
 
@@ -26,7 +26,7 @@ def add_cart(request, product_id):
 
     try:
         cart_item = CartItem.objects.get(product=product)
-        cart_item.quantity += 1 # Incrementing the amount of item in the cart.
+        cart_item.quantity += 1  # Incrementing the amount of item in the cart.
         cart_item.save()
 
     except CartItem.DoesNotExist:
@@ -40,6 +40,27 @@ def add_cart(request, product_id):
     # return HttpResponse(cart_item.product) # Check if cart_item returns a product.
     # return HttpResponse(cart_item.quantity) # Check if cart_item returns a valid amount of added items.
 
+    return redirect('cart')
+
+def remove_cart(request, product_id):
+    cart = Cart.objects.get(cart_id=_cart_id(request))
+    product = get_object_or_404(Product, id=product_id)
+    cart_item = CartItem.objects.get(product=product, cart=cart)
+
+    if cart_item.quantity > 1:
+        cart_item.quantity -= 1
+        cart_item.save()
+
+    else:
+        cart_item.delete()
+    return redirect('cart')
+
+
+def remove_cart_item(request, product_id):
+    cart = Cart.objects.get(cart_id=_cart_id(request))
+    product = get_object_or_404(Product, id=product_id)
+    cart_item = CartItem.objects.get(product=product, cart=cart)
+    cart_item.delete()
     return redirect('cart')
 
 
@@ -66,4 +87,3 @@ def cart(request, total=0, quantity=0, cart_items=None):
     }
 
     return render(request, template_name='cart/cart.html', context=context)
-
