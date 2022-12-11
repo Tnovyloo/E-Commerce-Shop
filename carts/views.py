@@ -18,7 +18,7 @@ def add_cart(request, product_id):
     try:   # Get the session key of current user.
         cart = Cart.objects.get(cart_id=_cart_id(request))
 
-    except Cart.DoesNotExist: # If cart does not exist create them.
+    except Cart.DoesNotExist:  # If cart does not exist create them.
         cart = Cart.objects.create(
             cart_id=_cart_id(request)
         )
@@ -73,7 +73,6 @@ def cart(request, total=0, quantity=0, cart_items=None):
             quantity += cart_item.quantity
         tax = (23 * total) / 100
         grand_total = total + tax
-
 
     except ObjectNotExists:
         pass
