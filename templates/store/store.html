@@ -4,13 +4,13 @@
 
 <section class="section-pagetop bg">
 <div class="container">
+	{% if 'search' in request.path %}
+	<h2 class="title-page">Results for: {{ phrase }}</h2>
+	{% else %}
 	<h2 class="title-page">Our Store</h2>
-
+	{% endif %}
 </div> <!-- container //  -->
 </section>
-
-
-
 
 <section class="section-content padding-y">
 <div class="container">
@@ -126,26 +126,7 @@
 </header><!-- sect-heading -->
 
 <div class="row">
-	<div class="col-md-4">
-		<figure class="card card-product-grid">
-			<div class="img-wrap">
-
-				<img src="images/items/1.jpg">
-
-			</div> <!-- img-wrap.// -->
-			<figcaption class="info-wrap">
-				<div class="fix-height">
-					<a href="./product-detail.html" class="title">Great item name goes here</a>
-					<div class="price-wrap mt-2">
-						<span class="price">$1280</span>
-						<del class="price-old">$1980</del>
-					</div> <!-- price-wrap.// -->
-				</div>
-				<a href="#" class="btn btn-block btn-success">Added to cart </a>
-			</figcaption>
-		</figure>
-	</div> <!-- col.// -->
-
+	{% if products %}
     {% for product in products %}
 	<div class="col-md-4">
 		<figure class="card card-product-grid">
@@ -165,6 +146,9 @@
 		</figure>
 	</div> <!-- col.// -->
     {% endfor %}
+	{% else %}
+	<h2 class="text-center">No search results!</h2>
+	{% endif %}
 
 </div> <!-- row end.// -->
 

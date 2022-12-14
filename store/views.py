@@ -64,6 +64,7 @@ def search(request):
     context = {
         'products': products,
         'products_count': products_count,
+        'phrase': keyword,
     }
 
     # TODO adjust html page.
