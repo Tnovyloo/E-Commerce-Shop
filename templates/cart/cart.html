@@ -38,7 +38,14 @@
 			<div class="aside"><img src="{{ item.product.image.url }}" class="img-sm"></div>
 			<figcaption class="info">
 				<a href="{{ item.product.get_url }}" class="title text-dark">{{ item.product.product_name }}</a>
-				<p class="text-muted small">{{ item.product.description | truncatewords:5 }}<br> Category: {{ item.product.category }}</p>
+				<p class="text-muted small">
+<!--				<p class="text-muted small">{{ item.product.description | truncatewords:5 }}<br>-->
+				{% if item.variations.all %}
+					{% for v in item.variations.all %}
+						{{ v.variation_category | capfirst }} : {{ v.variation_value | capfirst }} <br>
+					{% endfor %}
+				{% endif %}
+				</p>
 			</figcaption>
 		</figure>
 	</td>
@@ -47,11 +54,17 @@
 					<div class="col">
 						<div class="input-group input-spinner">
 							<div class="input-group-prepend">
-							<a href="{% url 'remove_cart' item.product.id %}" class="btn btn-light" type="button" id="button-plus"> <i class="fa fa-minus"></i> </a>
+							<a href="{% url 'remove_cart' item.product.id item.id %}" class="btn btn-light" type="button" id="button-plus"> <i class="fa fa-minus"></i> </a>
 							</div>
 							<input type="text" class="form-control"  value="{{ item.quantity }}">
 							<div class="input-group-append">
-							<a href="{% url 'add_cart' item.product.id %}" class="btn btn-light" type="button" id="button-minus"> <i class="fa fa-plus"></i> </a>
+								<form action="{% url 'add_cart' item.product.id %}" method="POST">
+									{% csrf_token %}
+									{% for i in item.variations.all %}
+										<input type="hidden" name="{{ i.variation_category | lower }}" value="{{ i.variation_value | capfirst }}">
+									{% endfor %}
+									<button class="btn btn-light" type="submit" id="button-minus"> <i class="fa fa-plus"></i> </button>
+								</form>
 							</div>
 						</div> <!-- input-group.// -->
 					</div> <!-- col.// -->
@@ -63,7 +76,7 @@
 		</div> <!-- price-wrap .// -->
 	</td>
 	<td class="text-right">
-	<a href="{% url 'remove_cart_item' item.product.id %}" class="btn btn-danger"> Remove</a>
+	<a href="{% url 'remove_cart_item' item.product.id item.id %}" class="btn btn-danger"> Remove</a>
 	</td>
 </tr>
 {% endfor %}
