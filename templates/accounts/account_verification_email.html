@@ -1,0 +1,13 @@
+{% autoescape off %}
+
+Hi {{ user.first_name }} !
+
+Hello [name]
+You registered an account on [site], before being able to use your account you need to verify that this is your email address by clicking here:
+http://{{domain}}{% url 'activate' uidb64=uid token=token %}
+
+If you think it's not you, please ignore this e-mail :)
+
+Kind Regards, [name of company]
+
+{% endautoescape %}

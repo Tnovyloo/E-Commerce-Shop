@@ -23,7 +23,7 @@ def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)
     product_variation = []
 
-# Getting product variation from POST method.
+    # Getting product variation from POST method.
     if request.method == "POST":
         # Getting all elements from POST.
         for item in request.POST:
