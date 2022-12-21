@@ -39,6 +39,13 @@ INSTALLED_APPS = [
     'accounts',
     'store',
     'carts',
+
+    # # 3rd party
+    # "allauth.account",  # new
+    # "allauth.socialaccount",  # new
+    # # social providers
+    # "allauth.socialaccount.providers.github",  # new
+    # "allauth.socialaccount.providers.twitter",  # new
 ]
 
 MIDDLEWARE = [
@@ -152,3 +159,16 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL')
 EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
+
+
+# social_app/settings.py
+
+# AUTHENTICATION_BACKENDS = (
+#     "allauth.account.auth_backends.AuthenticationBackend",
+# )
+#
+# SITE_ID = 1
+# # ACCOUNT_EMAIL_VERIFICATION = "none"
+# LOGIN_REDIRECT_URL = "home"
+# ACCOUNT_LOGOUT_ON_GET = True
+
