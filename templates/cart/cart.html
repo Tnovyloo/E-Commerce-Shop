@@ -106,8 +106,14 @@
 			<p class="text-center mb-3">
 				<img src="{% static 'images/misc/payments.png' %}" height="26">
 			</p>
-			<a href="./place-order.html" class="btn btn-primary btn-block"> Checkout </a>
+			{% if user.is_authenticated %}
+			<a href="{% url 'checkout' %} " class="btn btn-primary btn-block"> Checkout </a>
 			<a href="{% url 'home' %}" class="btn btn-light btn-block">Continue Shopping</a>
+			{% else %}
+			<p class="text-muted small">You are not logged in, for our common safety purposes please create account before ordering. </p>
+			<a href="{% url 'checkout' %} " class="btn btn-primary btn-block"> Checkout </a>
+			<a href="{% url 'home' %}" class="btn btn-light btn-block">Continue Shopping</a>
+			{% endif %}
 		</div> <!-- card-body.// -->
 		</div> <!-- card.// -->
 
