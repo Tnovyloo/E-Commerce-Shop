@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'accounts',
     'store',
     'carts',
+    'orders',
 
     # # 3rd party
     # "allauth.account",  # new
