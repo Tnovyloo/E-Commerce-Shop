@@ -76,34 +76,47 @@ def login(request):
         if user is not None:
             # auth.login(request, user)
             try:
-                # cart = Cart.objects.get(cart_id=_cart_id(request))
-                # is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
-                # if is_cart_item_exists:
-                #     cart_item = CartItem.objects.filter(cart=cart)
-                #
-                #     # Getting product variations by cart ID
-                #     product_variation = [list(item.variations.all()) for item in cart_item]
-                #
-                #     # Get the cart items from the user to access his product variations.
-                #     cart_item = CartItem.objects.filter(user=user)
-                #     ex_var_list = []
-                #     id = []
-                #     for item in cart_item:
-                #         existing_variation = item.variations.all()
-                #         ex_var_list.append(list(existing_variation))
-                #         id.append(item.id)
-
+                # Get current cart.
                 cart = Cart.objects.get(cart_id=_cart_id(request))
                 is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
                 if is_cart_item_exists:
                     cart_item = CartItem.objects.filter(cart=cart)
 
+                    # Getting the product type of variations.
+                    product_variation = []
                     for item in cart_item:
-                        item.user = user
-                        item.save()
+                        variation = item.variations.all()
+                        product_variation.append(list(variation))
+
+                    # Get the cart items from the user to get cart products variations.
+                    cart_item = CartItem.objects.filter(user=user)
+                    ex_var_list = []  # Existing variations of Cart items.
+                    id = []
+                    for item in cart_item:
+                        existing_variation = item.variations.all()
+                        ex_var_list.append(list(existing_variation))
+                        id.append(item.id)
+
+                    # Check if 'pv' - ( product variation ) exists in ex_var_list ( existing product variation list)
+                    for pv in product_variation:
+                        if pr in ex_var_list:
+                            index = ex_var_list.index(pv)
+                            item_id = id[index]
+                            item = CartItem.objects.get(id=item_id)
+                            item.quantity += 1
+                            item.user = user
+                            item.save()
+                        # If it not exists in current product variations in cart then assign the item.user to user.
+                        else:
+                            cart_item = CartItem.objects.filter(cart=cart)
+                            for item in cart_item:
+                                item.user = user
+                                item.save()
 
             except:
                 pass
+
+            auth.login(request, user)
 
             messages.success(request, 'You are now logged in!')
             return redirect('dashboard')
