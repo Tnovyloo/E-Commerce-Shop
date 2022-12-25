@@ -35,18 +35,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.sites',
     'category',
     'accounts',
     'store',
     'carts',
     'orders',
 
-    # # 3rd party
+    # # # 3rd party
     # "allauth.account",  # new
     # "allauth.socialaccount",  # new
-    # # social providers
-    # "allauth.socialaccount.providers.github",  # new
-    # "allauth.socialaccount.providers.twitter",  # new
+    # # # social providers
+    # # "allauth.socialaccount.providers.github",  # new
+    # # "allauth.socialaccount.providers.twitter",  # new
+    # 'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
