@@ -3,6 +3,7 @@ from carts.models import CartItem, Cart
 from orders.models import Order, OrderProduct, Payment
 from accounts.models import Account
 from .forms import OrderForm
+from store.models import Product
 import datetime
 import json
 # Create your views here.
@@ -28,6 +29,41 @@ def payments(request):
     order.payment = payment
     order.is_ordered = True  # Order is ordered.
     order.save()
+
+    # Move the cart items to Order Product model.
+    cart_items = CartItem.objects.filter(user=request.user)
+
+    for item in cart_items:
+        orderproduct = OrderProduct()                       # Initialize new Object.
+        orderproduct.order_id = order.id                    # We have currently order in 'order' variable.
+        orderproduct.payment = payment                      # Payment is the foreign field.
+        orderproduct.user_id = request.user.id              # Assign the user id to OrderProduct object.
+        orderproduct.product_id = item.product_id           # Assign the Foreign Key of product
+        orderproduct.quantity = item.quantity               # Assign the quantity of product
+        orderproduct.product_price = item.product.price     # Assign the price
+        orderproduct.ordered = True                         # Change the boolean field to true
+        orderproduct.save()
+
+        # Get the variation of ordered product.
+        cart_item = CartItem.objects.get(id=item.id)
+        product_variation = cart_item.variations.all()
+        orderproduct = OrderProduct.objects.get(id=orderproduct.id)
+        orderproduct.variations.set(product_variation)
+        orderproduct.save()
+
+        # Reduce the quantity of the sold products.
+        product = Product.objects.get(id=item.product_id)
+        product.stock -= item.quantity
+        product.save()
+
+    # Clear cart
+    CartItem.objects.filter(user=request.user).delete()
+
+    # Send order received email to customer
+
+    # Send order number and transaction ID back to sendData method via JsonResponse
+
+
 
     return render(request, 'orders/payments.html')
 
