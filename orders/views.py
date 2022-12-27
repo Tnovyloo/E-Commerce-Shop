@@ -6,6 +6,9 @@ from .forms import OrderForm
 from store.models import Product
 import datetime
 import json
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 # Create your views here.
 
 def payments(request):
@@ -59,14 +62,32 @@ def payments(request):
     # Clear cart
     CartItem.objects.filter(user=request.user).delete()
 
-    # Send order received email to customer
+    # Send message 'order received' email to customer.
+    mail_subject = "Thank you for purchasing on our site."   # This will be subject of our activation e-mail
+    message = render_to_string('orders/order_received_email.html', {
+        'user': request.user,
+        'order': order,
+    })
+
+    account_email = request.user.email      # This is Account user email
+    order_email = order.email               # This is Order user email
+
+    if order_email == account_email:
+        send_email = EmailMessage(mail_subject, message, to=[account_email])
+    else:
+        send_email = EmailMessage(mail_subject, message, to=[account_email, order_email])
+
+    # send_email.attach_file('media/photos/products/ferrari.jpg')  # Attaching files with path is like this.
+    send_email.send()
 
     # Send order number and transaction ID back to sendData method via JsonResponse
+    data = {
+        'order_number': order.order_number,
+        'transID': payment.payment_id,
+    }
 
-
-
-    return render(request, 'orders/payments.html')
-
+    return JsonResponse(data)
+    # return render(request, 'orders/payments.html
 
 def place_order(request, total=0, quantity=0):
     """ Getting all information from billing post method. """
@@ -125,6 +146,8 @@ def place_order(request, total=0, quantity=0):
                                       is_ordered=False,
                                       order_number=order_number
                                       )
+
+            # Send needed context to payments.html
             context = {
                 'order': order,
                 'cart_items': cart_items,
@@ -140,4 +163,34 @@ def place_order(request, total=0, quantity=0):
 
     else:
         return redirect('checkout')
+
+
+def order_complete(request):
+    order_number = request.GET.get('order_number')
+    transID = request.GET.get('payment_id')
+
+    # Try if order exists.
+    try:
+        order = Order.objects.get(order_number=order_number,
+                                  is_ordered=True)
+        order_products = OrderProduct.objects.filter(order_id=order.id)
+
+        subtotal = 0
+        for i in order_products:
+            subtotal += i.product_price * i.quantity
+
+        payment = Payment.objects.get(payment_id=transID)
+
+        context = {
+            'order': order,
+            'ordered_products': order_products,
+            'transID': transID,
+            'payment': payment,
+            'subtotal': subtotal,
+        }
+        return render(request, 'orders/order_complete.html', context)
+
+    except (Payment.DoesNotExist, Order.DoesNotExist):
+        return redirect('home')
+
 
