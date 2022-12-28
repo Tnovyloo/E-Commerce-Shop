@@ -18,5 +18,9 @@ class AccountAdmin(UserAdmin):
     list_filter = ()
     fieldsets = ()
 
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'city', 'address_line_1', 'address_line_2', 'state', 'country')
+
 
 admin.site.register(Account, AccountAdmin)
+admin.site.register(UserProfile, UserProfileAdmin)

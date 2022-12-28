@@ -1,5 +1,5 @@
 from django import forms
-from .models import Account
+from .models import Account, UserProfile
 
 
 class RegistrationForm(forms.ModelForm):
@@ -37,3 +37,22 @@ class RegistrationForm(forms.ModelForm):
 
         if password != confirm_password:
             raise forms.ValidationError("Password doesn't match!")
+
+
+class UserForm(forms.ModelForm):
+    """
+    User form for editing first name, last name,
+    phone number of account.
+    """
+    class Meta:
+        model = Account
+        fields = ('first_name', 'last_name', 'phone_number')
+
+
+class UserProfileForm(forms.ModelForm):
+    """
+    UserProfile form for editing address information.
+    """
+    class Meta:
+        model = UserProfile
+        fields = ('address_line_1', 'address_line_2', 'city', 'state', 'country')

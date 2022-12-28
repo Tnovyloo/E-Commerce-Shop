@@ -67,3 +67,22 @@ class Account(AbstractBaseUser):
 
     def has_module_perms(self, add_label):
         return True
+
+    def full_name(self):
+        return f"{str(self.first_name).capitalize()} {str(self.last_name).capitalize()}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(Account, on_delete=models.CASCADE)
+    address_line_1 = models.CharField(blank=True, max_length=200)
+    address_line_2 = models.CharField(blank=True, max_length=200)
+    city = models.CharField(blank=True, max_length=200)
+    state = models.CharField(blank=True, max_length=200)
+    country = models.CharField(blank=True, max_length=200)
+
+    def __str__(self):
+        return f"{self.user}"
+
+    def full_address(self):
+        return f"{self.address_line_1}, {self.address_line_2}"
+

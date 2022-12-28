@@ -19,6 +19,10 @@ from accounts.models import Account
 from carts.models import CartItem, Cart
 import requests
 
+# Dashboard imports
+from orders.models import Order
+
+
 def register(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)  # Using created Form.
@@ -191,7 +195,36 @@ def activate(request, uidb64, token):
 @login_required(login_url='login')
 def dashboard(request):
     """Dashboard function."""
-    return render(request, 'accounts/dashboard.html')
+    # Getting count of user orders.
+    orders = Order.objects.filter(user_id=request.user.id, is_ordered=True).order_by("-created_at")
+    orders_count = orders.count()
+    context = {
+        'orders_count': orders_count
+    }
+
+    return render(request, 'accounts/dashboard.html', context)
+
+def my_orders(request):
+    orders = Order.objects.filter(user_id=request.user.id, is_ordered=True).order_by("-created_at")
+
+    context = {
+        'orders': orders
+    }
+
+    return render(request, 'accounts/my_orders.html', context)
+
+
+def change_password(request):
+    pass
+
+
+def edit_profile(request):
+
+    context = {
+
+    }
+
+    return render(request, 'accounts/edit_profile.html', context)
 
 
 def forgotPassword(request):
