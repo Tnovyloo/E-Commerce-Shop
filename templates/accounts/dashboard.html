@@ -19,23 +19,25 @@
 		</header>
 		<div class="card-body">
 			<div class="row">
-				<div class="col-md-6">
+                <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Total Orders:</h4>
-                            <h4>{{ orders_count }}</h4>
-                            <a href="{% url 'my_orders' %}">View orders</a>
+                            <h4 class="card-title text-center">Your account:</h4>
+                            <hr>
+                            <h6 class="text-center">{{ user.full_name }}</h6>
+                            <h6 class="text-center">{{ user.email }}</h6>
+                            <h6 class="text-center">{{ user.phone_number }}</h6>
+                            <h6 class="text-center"><a href="{% url 'edit_profile' %}">Edit profile</a></h6>
+
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Your account:</h4>
-                            <hr>
-                            <h6>{{ user.full_name }}</h6>
-                            <h6>{{ user.email }}</h6>
-                            <h6>{{ user.phone_number }}</h6>
+                            <h4 class="card-title text-center">Total Orders:</h4>
+                            <h4 class="text-center">{{ orders_count }}</h4>
+                            <h6 class="text-center"><a href="{% url 'my_orders' %}">View orders</a></h6>
                         </div>
                     </div>
                 </div>

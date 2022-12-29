@@ -3,6 +3,9 @@ from .models import Account, UserProfile
 
 
 class RegistrationForm(forms.ModelForm):
+    """
+    Registration form with own clean method
+    """
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'placeholder': 'Enter Password',
         'class': 'form-control',
@@ -48,6 +51,11 @@ class UserForm(forms.ModelForm):
         model = Account
         fields = ('first_name', 'last_name', 'phone_number')
 
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
 
 class UserProfileForm(forms.ModelForm):
     """
@@ -56,3 +64,8 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ('address_line_1', 'address_line_2', 'city', 'state', 'country')
+
+    def __init__(self, *args, **kwargs):
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'

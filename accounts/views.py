@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RegistrationForm
 from accounts.models import Account
 from django.contrib import messages, auth
@@ -20,7 +20,9 @@ from carts.models import CartItem, Cart
 import requests
 
 # Dashboard imports
-from orders.models import Order
+from orders.models import Order, OrderProduct
+from .forms import UserForm, UserProfileForm
+from .models import UserProfile
 
 
 def register(request):
@@ -88,7 +90,20 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
 
         if user is not None:
-            # auth.login(request, user)
+
+            # Create UserProfile if it does not exist.
+            user_profile = UserProfile.objects.filter(user=user).exists()
+            if user_profile:
+                pass
+            else:
+                user_profile = UserProfile.objects.create(user=user,
+                                                          address_line_1="",
+                                                          address_line_2="",
+                                                          city="",
+                                                          state="",
+                                                          country="",)
+                user_profile.save()
+
             try:
                 # Get current cart.
                 cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -204,7 +219,12 @@ def dashboard(request):
 
     return render(request, 'accounts/dashboard.html', context)
 
+
+@login_required(login_url='login')
 def my_orders(request):
+    """
+    Returning all orders from user.
+    """
     orders = Order.objects.filter(user_id=request.user.id, is_ordered=True).order_by("-created_at")
 
     context = {
@@ -213,15 +233,84 @@ def my_orders(request):
 
     return render(request, 'accounts/my_orders.html', context)
 
+@login_required(login_url='login')
+def order_detail(request, order_id):
+    """
+    Order detail view of specific order
+    :param request:
+    :param order_id:
+    :return:
+    """
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id, user=request.user)
+    order = Order.objects.get(order_number=order_id)
 
-def change_password(request):
-    pass
-
-
-def edit_profile(request):
+    # Amount of price.
+    subtotal = 0
+    for item in order_detail:
+        subtotal += item.product_price * item.quantity
 
     context = {
+        "order_detail": order_detail,
+        "order": order,
+        "subtotal": subtotal
+    }
 
+    return render(request, 'accounts/order_detail.html', context)
+
+
+@login_required(login_url='login')
+def change_password(request):
+    """
+    Changing password view.
+    """
+    if request.method == "POST":
+        current_password = request.POST["current_password"]
+        new_password1 = request.POST["new_password1"]
+        new_password2 = request.POST["new_password2"]  # Confirm Password
+
+        user = Account.objects.get(username__exact=request.user.username)
+
+        # Check if new password and confirmed password is the same
+        if new_password1 == new_password2:
+            # Check if current password is True.
+            success = user.check_password(current_password)
+            if success:
+                user.set_password(new_password1)
+                user.save()
+                messages.success(request, "Password updated successfully.")
+                return redirect('change_password')
+            else:
+                messages.error(request, "Please enter valid current password")
+                return redirect('change_password')
+        else:
+            messages.error(request, "New password does not match!")
+            return redirect('change_password')
+
+    return render(request, 'accounts/change_password.html', context)
+
+
+@login_required(login_url='login')
+def edit_profile(request):
+    """
+    Editing profile view with forms.
+    """
+    print(request.user)
+    userprofile = get_object_or_404(UserProfile, user=request.user)
+    if request.method == "POST":
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, instance=userprofile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('edit_profile')
+    else:
+        user_form = UserForm(instance=request.user)  # Send form with current data.
+        profile_form = UserProfileForm(instance=userprofile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
     }
 
     return render(request, 'accounts/edit_profile.html', context)
