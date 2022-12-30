@@ -37,7 +37,7 @@ def store(request, category_slug=None):
         print(paged_products)
 
     context = {'products': paged_products,
-               'products_founded': products_count}
+               'products_count': products_count}
 
     return render(request, template_name='store/store.html', context=context)
 

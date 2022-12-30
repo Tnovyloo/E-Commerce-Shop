@@ -286,7 +286,7 @@ def change_password(request):
             messages.error(request, "New password does not match!")
             return redirect('change_password')
 
-    return render(request, 'accounts/change_password.html', context)
+    return render(request, 'accounts/change_password.html')
 
 
 @login_required(login_url='login')
