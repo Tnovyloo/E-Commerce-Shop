@@ -6,26 +6,26 @@
  - User could easily search products via Search View. 
  - User could browse by categories.
  - Easy Adding to Cart View.
- - If product quantity is equal to 0 user could not see products.
- - Reviews of authenticated users (Product must be purchased before)
+ - If product quantity is equal to 0, user could not see this product.
+ - Reviews of authenticated users (Product must be purchased before by user)
  
 # Cart
- - User has a Cart View from which he can increase or decrease amount of specific Product (And of course Delete).
- - If User is not authorized, the cart is saved on Session Key, when if User authorizes, the cart will be assigned to the logged User.
- - When User goes to "Checkout" on "Cart Page" and provide data then goes to "Make Order", his Cart is assigned to the new Order.
+ - User has a Cart View from which he could increase or decrease amount of specific Product (And of course Delete).
+ - If User is not authorized, the cart is saved on the Session Key, when if User authorizes, the cart will be automatically assigned to the logged User.
+ - When User make the "Checkout" on "Cart Page" and provide data, then he is redirected to "Make Order" view, and his Cart is assigned to the new Order (Order Model).
  
 # Orders
  - Every order has generated unique ID.
- - "Checkout" view uses a "Billing" Form which contains needed data to make a order.
+ - "Checkout" view uses a "Billing" Form which contains needed data to make a new order.
  - "Make Order" is the page with summarized data of the order and cart. User could pay for order via PayPal.
- - When payment is successful User is redirected to "Payment Successful" View.
+ - When payment is successful, User is redirected to "Payment Successful" View.
  - Server sends a confirmation of taking order (To the Order E-mail and Account E-mail)
  
  # Accounts
  - Custom user model
     - To register, use "Register View"
-    - To activate account User needs to activate it via e-mail (Verification E-mail via SMTP G-Mail)
-    - Imported "Django messages" to send success or error messages 
+    - To activate account, User needs to activate it via e-mail (Server send Verification E-mail via SMTP G-Mail)
+    - Imported "Django messages" to send success or error messages from server.
     - "Forgot Password View" also uses verification e-mail process.
     - Implemented DashBoard with User orders and User contact data (with forms to change them if needed).
     
